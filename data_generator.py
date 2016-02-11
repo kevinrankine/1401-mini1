@@ -99,6 +99,10 @@ def main():
             dataset[4].append(grid)
         
         grid = np.array([[0 for _ in range(N)] for _ in range(N)])
+
+    dataset[5] = (dataset[2][:5] + dataset[3][4:])[1:]
+    dataset[6] = dataset[2][:5] + dataset[4][::-1][4:]
+    pprint(dataset[6])
     
     return dataset
 
