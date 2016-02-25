@@ -135,14 +135,21 @@ def plot_data(V_hat, delta, title):
     delta = (delta - np.mean(delta)) / np.sqrt(np.var(delta))
     fig = plt.figure()
     
-    ax = fig.add_subplot(211)
+    ax = fig.add_subplot(311)
     plt.title(title)
     plt.ylabel('V_hat')
 
     ax.plot(np.array([i for i in range(0, len(V_hat))]), V_hat, c='g')
-    pylab.ylim([-1, 1])
+    pylab.ylim([-1.5, 1.5])
 
-    ax = fig.add_subplot(212)
+    ax = fig.add_subplot(312)
+    plt.ylabel('V_hat_increased')
+
+    ax.plot(np.array([i for i in range(0, len(V_hat))]), V_hat-.3, c='b')
+    pylab.ylim([-1.5, 1.5])
+
+
+    ax = fig.add_subplot(313)
     plt.ylabel('Dopamine')
     plt.xlabel('# of time steps')
     ax.plot(np.array([i for i in range(0, len(delta))]), delta, c='r')
