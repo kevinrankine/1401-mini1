@@ -1,4 +1,5 @@
 import numpy as np
+from copy import copy 
 
 '''
 input_neurons : [(neuron, weight), ..., (neuron, weight)]
@@ -6,17 +7,19 @@ tau : between [0, 1], regulates inertia of neuron's input
 default_value : value an input neuron outputs (either 0 or 1)
 '''
 class Neuron(object):
-    def __init__(self, input_neurons = [], tau = 0.1, default_value = 1.0, lc_group = None):
+    def __init__(self, input_neurons = [], tau = 0.1, default_value = 1.0, N = 256):
         self.prevX = 0.0
         self.input_neurons = input_neurons
         self.tau = tau
         self.default_value = default_value
         self.Xs = {0 : 0}
         self.G = 1
+        self.V = [0. for _ in range(N)]
+        self.Vp = [0. for _ in range(N)]
     
     def activate(self, t):
         if len(self.input_neurons) > 0:
-            return 1.0 / (1 + np.exp(self.G * self.X(t)))
+            return 1.0 / (1 + np.exp(-1 * self.G * self.X(t)))
         else:
             return self.default_value
 
@@ -31,6 +34,20 @@ class Neuron(object):
     def set_default(self, value):
         self.default_value = value
 
+    def update_vg(self, t, rate = 0.5, NE = 0, alpha = 1):
+        N = len(self.V)
+        
+        for i in range(len(self.V)):
+            noise = np.random.randn()
+            self.V[i] = max(rate * self.Vp[i] - NE + self.activate(t)  + alpha * (sum(self.Vp) - N * self.Vp[i]) + alpha * noise, 0)
+        
+        self.G = np.log(sum(self.V))
+        
+        self.Vp = self.V
+        self.V = [0. for _ in range(N)]
+        
+        
+
 def main():
     input_neuron_t = Neuron(default_value = 0.0)
     input_neuron_d = Neuron(default_value = 1.0)
@@ -39,28 +56,20 @@ def main():
     decision_distract = Neuron(input_neurons = [(input_neuron_d, 1)], tau = 1)
     
     decision_target.add_input(decision_distract, -1)
-    print decision_target.activate(1)
-    return 
     
     output_neuron = Neuron(input_neurons = [(decision_target, 1)])
     
-    N = 256
-    V = [0. for _ in range(N)]
-    Vp = [0. for _ in range(N)]
-
-    rate = 0.5
-    NE = 10
-    
-    for t in range(100):
+    for t in range(10):
         print "Activation {}".format(output_neuron.activate(t))
-        
-        for i in range(N):
-            V[i] = rate * Vp[i] - NE + decision_target.activate(t) + N * Vp[i] - sum(Vp) + np.random.randn()
-        G = sum(V)
-        
-        print "G {}".format(G)
-        decision_target.G = G
-        Vp = V
-        V = [0. for _ in range(N)]
+        decision_target.update_vg(t, rate = 0.5, NE = 0, alpha = 1)
+    print "SOSA"
+
+    input_neuron_t.set_default(1.0)
+    input_neuron_d.set_default(0.0)
+
+    for t in range(30):
+        print "Activation {}".format(output_neuron.activate(t))
+        decision_target.update_vg(t, rate = 1, NE = 0, alpha = 1)
+    
     
 main()
