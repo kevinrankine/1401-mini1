@@ -22,7 +22,7 @@ class Cortex(object):
         self.inputs = inputs
 
     def backward(self, US):
-        beta = 0.5 if US else 0.05
+        beta = 0.5 if US == 1 else 0.05
 
         for i in range(self.d_out):
             for j in range(self.d_hid):
