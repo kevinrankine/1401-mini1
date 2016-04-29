@@ -24,8 +24,8 @@ class KalmanFilter(object):
             self.update(x, reward)
         
     def zero(self):
-        self.w = np.zeros(self.d_in)
-        self.cov = self.var_w * np.eye(self.d_in)
+        self.w = np.zeros(self.d_in, dtype=np.float64)
+        self.cov = self.var_w * np.eye(self.d_in, dtype=np.float64)
 
     def predict(self, x):
         return np.dot(self.w, x)
