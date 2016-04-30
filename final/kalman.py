@@ -25,7 +25,7 @@ class KalmanFilter(object):
         self.cov = diffused_cov - cov_diff
         
         self.var_r += self.rate / (2 * self.var_r) * ((delta ** 2 / self.var_r) - 1)
-        self.volatility += self.rate / (2 * self.volatility) * ((np.linalg.norm(self.w - old_w) ** 2 / self.volatility) - 1)
+        self.volatility += self.rate / (2 * self.volatility) * ((np.linalg.norm(self.w - old_w) ** 2 / self.volatility) - self.d_in)
 
     def train(self, x, reward, nepochs=10):
         for i in range(nepochs):
