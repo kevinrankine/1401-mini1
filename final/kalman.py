@@ -13,9 +13,12 @@ class KalmanFilter(object):
 
         self.w = np.zeros(d_in, dtype=np.float64)
         self.cov = var_w * np.eye(d_in, dtype=np.float64)
+        self.deltas = []
 
     def update(self, x, reward):
         delta = reward - self.predict(x)
+        self.deltas.append(delta)
+        
         diffused_cov = self.cov + self.volatility * np.eye(self.d_in)
         k_gain = diffused_cov.dot(x) / (x.dot(diffused_cov.dot(x)) + self.var_r)
         cov_diff = k_gain[np.newaxis].T.dot(x.T.dot(diffused_cov)[np.newaxis])
