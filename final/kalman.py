@@ -59,12 +59,24 @@ class KalmanFilter(object):
     def predict(self, x):
         return np.dot(self.w, x)
 
-    def plot(self):
+    def plot(self, title):
+        fig = plt.figure(figsize=(15,5))
+        fig.subplots_adjust(hspace=5)
+        plt.subplot(121)
         plt.plot(np.arange(1, len(self.deltas) + 1), self.deltas, label='$\delta_n$')
+        plt.legend()
+        plt.ylim(-2, 2)
+        plt.xlabel("Trial Number")
+        plt.title(title)
+        
+        plt.subplot(122)
         plt.plot(np.arange(1, len(self.kalmans) + 1), zip(*self.kalmans)[0], label='$k_A$')
+        plt.ylim(-2, 2)
+        plt.xlabel("Trial Number")
+        plt.title(title)
+        
         if len(self.kalmans[0]) > 1:
             plt.plot(np.arange(1, len(self.kalmans) + 1), zip(*self.kalmans)[1], label='$k_B$')
         
         plt.legend()
-        plt.ylim(-3, 3)
         plt.show()
