@@ -41,6 +41,7 @@ class KalmanFilter(object):
 
         self.deltas.append(delta)
         self.kalmans.append(map(lambda x : x.tolist(), k_gain))
+        self.var_rs.append(self.var_r)
 
     def train(self, x, reward, nepochs=10):
         for i in range(nepochs):
@@ -55,21 +56,22 @@ class KalmanFilter(object):
         self.volatility = self.old_volatility
         self.deltas = []
         self.kalmans = []
+        self.var_rs = []
 
     def predict(self, x):
         return np.dot(self.w, x)
 
-    def plot(self, title):
+    def plot(self, title, add=False):
         fig = plt.figure(figsize=(15,5))
         fig.subplots_adjust(hspace=5)
-        plt.subplot(121)
+        plt.subplot(131)
         plt.plot(np.arange(1, len(self.deltas) + 1), self.deltas, label='$\delta_n$')
         plt.legend()
         plt.ylim(-2, 2)
         plt.xlabel("Trial Number")
         plt.title(title)
         
-        plt.subplot(122)
+        plt.subplot(132)
         plt.plot(np.arange(1, len(self.kalmans) + 1), zip(*self.kalmans)[0], label='$k_A$')
         plt.ylim(-2, 2)
         plt.xlabel("Trial Number")
@@ -79,4 +81,20 @@ class KalmanFilter(object):
             plt.plot(np.arange(1, len(self.kalmans) + 1), zip(*self.kalmans)[1], label='$k_B$')
         
         plt.legend()
+        
+        if add:
+            plt.subplot(133)
+            plt.plot(np.arange(1, len(self.var_rs) + 1), self.var_rs, label='$\sigma_r$')
+            plt.legend()
+            plt.ylim(-2, 2)
+            plt.xlabel("Trial Number")
+            plt.title(title)
+            
+        
         plt.show()
+        
+        
+        
+        
+        
+        
